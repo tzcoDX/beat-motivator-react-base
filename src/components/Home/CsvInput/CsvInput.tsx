@@ -18,7 +18,7 @@ export const CsvInput: React.FC<CsvInputProps> = (props) => {
   const { register, handleSubmit, errors, reset } = useForm<FormData>();
 
   const handleParseCsv: SubmitHandler<FormData> = ({ csv }) => {
-    const data = parseToData(
+    const data = parseData(
       csv
         .split("\n")
         .filter((_, idx) => idx > 0)
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const parseToData = (csvElements: string[][]): Partial<DataType>[] =>
+const parseData = (csvElements: string[][]): Partial<DataType>[] =>
   csvElements.map((element) => ({
     version: element[0] as Version,
     title: element[1],
