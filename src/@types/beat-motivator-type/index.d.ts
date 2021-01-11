@@ -1,4 +1,4 @@
-declare module "data-type" {
+declare module "beat-motivator-type" {
   export type DataType = {
     version: Version;
     title: string;
@@ -14,7 +14,7 @@ declare module "data-type" {
   };
 
   export type Attribute = {
-    difficulty: number;
+    level: number;
     score: number;
     pGreat: number;
     great: number;
@@ -73,4 +73,41 @@ declare module "data-type" {
     | "A"
     | "AA"
     | "AAA";
+
+  export type StatisticsType = {
+    played: number;
+    total: number;
+    scoreSum: number;
+    notesSum: number;
+    maxMinusUnderTen: number;
+    maxMinusUnderHundred: number;
+    maxMinus: number;
+    rate99: number;
+    rate98: number;
+    rate97: number;
+    rate96: number;
+    rate95: number;
+    tripleA: number;
+    doubleA: number;
+    singleA: number;
+  };
+
+  export type MasterDataType = {
+    version: Version;
+    title: string;
+    genre: string;
+    artist: string;
+    spb: MasterAttribute | "NO_DATA";
+    spn: MasterAttribute | "NO_DATA";
+    sph: MasterAttribute | "NO_DATA";
+    spa: MasterAttribute | "NO_DATA";
+    spl: MasterAttribute | "NO_DATA";
+  };
+
+  export type MasterAttribute = {
+    level: number;
+    notes: number;
+    kaidenAverage: number;
+    topScore: number;
+  };
 }

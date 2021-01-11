@@ -4,16 +4,19 @@ import { Box, Typography, Button, TextField } from "@material-ui/core";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 import { useDataHandler } from "../../../hooks";
-
-import { DataType, Version, ClearType, DjLevel } from "data-type";
+import { StatisticsType, DataType } from "beat-motivator-type";
 
 type FormData = {
   csv: string;
 };
 
-type CsvInputProps = {};
+type CsvInputProps = {
+  setPlayerData: React.Dispatch<React.SetStateAction<DataType[]>>;
+};
 
 export const CsvInput: React.FC<CsvInputProps> = (props) => {
+  const { setPlayerData } = props;
+
   const classes = useStyles();
   const theme = useTheme();
 
@@ -22,14 +25,28 @@ export const CsvInput: React.FC<CsvInputProps> = (props) => {
   const { parseData } = useDataHandler();
 
   const handleParseCsv: SubmitHandler<FormData> = ({ csv }) => {
-    const data = parseData(
-      csv
-        .split("\n")
-        .filter((_, idx) => idx > 0)
-        .map((row) => row.split(","))
-    );
-    console.log(data);
+    setPlayerData(parseData(csv));
   };
+
+  // console.log(
+  //   new Array<StatisticsType>(12).fill({
+  //     played: 0,
+  //     total: 0,
+  //     scoreSum: 0,
+  //     notesSum: 0,
+  //     maxMinusUnderTen: 0,
+  //     maxMinusUnderHundred: 0,
+  //     maxMinus: 0,
+  //     rate99: 0,
+  //     rate98: 0,
+  //     rate97: 0,
+  //     rate96: 0,
+  //     rate95: 0,
+  //     tripleA: 0,
+  //     doubleA: 0,
+  //     singleA: 0,
+  //   })
+  // );
 
   return (
     <Box display="flex" flexDirection="column" gridGap={theme.spacing(1)}>
