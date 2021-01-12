@@ -18,7 +18,7 @@ declare module "beat-motivator-type" {
     score: number;
     pGreat: number;
     great: number;
-    missCount: number | "NO PLAY";
+    missCount: number;
     clearType: ClearType;
     djLevel: DjLevel;
   };
@@ -97,11 +97,11 @@ declare module "beat-motivator-type" {
     title: string;
     genre: string;
     artist: string;
-    spb: MasterAttribute | "NO_DATA";
-    spn: MasterAttribute | "NO_DATA";
-    sph: MasterAttribute | "NO_DATA";
-    spa: MasterAttribute | "NO_DATA";
-    spl: MasterAttribute | "NO_DATA";
+    spb: MasterAttribute;
+    spn: MasterAttribute;
+    sph: MasterAttribute;
+    spa: MasterAttribute;
+    spl: MasterAttribute;
   };
 
   export type MasterAttribute = {

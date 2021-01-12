@@ -28,26 +28,6 @@ export const CsvInput: React.FC<CsvInputProps> = (props) => {
     setPlayerData(parseData(csv));
   };
 
-  // console.log(
-  //   new Array<StatisticsType>(12).fill({
-  //     played: 0,
-  //     total: 0,
-  //     scoreSum: 0,
-  //     notesSum: 0,
-  //     maxMinusUnderTen: 0,
-  //     maxMinusUnderHundred: 0,
-  //     maxMinus: 0,
-  //     rate99: 0,
-  //     rate98: 0,
-  //     rate97: 0,
-  //     rate96: 0,
-  //     rate95: 0,
-  //     tripleA: 0,
-  //     doubleA: 0,
-  //     singleA: 0,
-  //   })
-  // );
-
   return (
     <Box display="flex" flexDirection="column" gridGap={theme.spacing(1)}>
       <Box display="flex">

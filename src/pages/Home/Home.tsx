@@ -18,6 +18,7 @@ const Home: React.FC = () => {
 
   // TODO: ここらへんの処理怪しすぎる
   useEffect(() => {
+    // マスターのcsvを読み込む
     if (playerData.length === 0) return;
     (async () => {
       setMasterData(
