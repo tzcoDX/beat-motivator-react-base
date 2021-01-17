@@ -370,14 +370,13 @@ export const useDataHandler = () => {
       }
       ["spb", "spn", "sph", "spa", "spl"].forEach((val) => {
         const key = val as "spb" | "spn" | "sph" | "spa" | "spl";
-        if (isNoPlay(valData[key])) return;
-        const idx = valData[key].level - 1;
+        if (isNoData(valMaster[key])) return;
+        const idx = valMaster[key].level - 1;
         ret[idx].total += 1;
         if (isNoPlay(valData[key])) return;
         const rate =
           valData[key].score / (valMaster[key].notes * 2) + ERROR_GETA;
         const scoreMaxMinus = valMaster[key].notes * 2 - valData[key].score;
-        console.log(valMaster.title + ", " + rate + ", " + scoreMaxMinus);
         ret[idx].played += 1;
         ret[idx].scoreSum += valData[key].score;
         ret[idx].notesSum += valMaster[key].notes;

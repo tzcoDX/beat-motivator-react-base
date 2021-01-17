@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container } from "@material-ui/core";
 
-import { useDataHandler, DataType, StatisticsType } from "../../hooks";
-import { CsvInput } from "../../components/Home";
+import { DataType, StatisticsType } from "../../hooks";
+import { CsvInput, StatisticsTable } from "../../components/Home";
 
 const Home: React.FC = () => {
   const classes = useStyles();
@@ -11,11 +11,11 @@ const Home: React.FC = () => {
   // TODO: GOD STATE化してるのでReduxとかつかいたい
   const [playerData, setPlayerData] = useState<DataType[]>([]);
   const [statistics, setStatistics] = useState<StatisticsType[]>([]);
-  const { calcStatistics } = useDataHandler();
 
   return (
     <Container maxWidth={false}>
       <CsvInput setPlayerData={setPlayerData} setStatistics={setStatistics} />
+      {!!statistics.length && <StatisticsTable statistics={statistics} />}
     </Container>
   );
 };
