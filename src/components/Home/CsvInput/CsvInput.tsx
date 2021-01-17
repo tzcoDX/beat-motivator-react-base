@@ -3,8 +3,12 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Box, Typography, Button, TextField } from "@material-ui/core";
 import { useForm, SubmitHandler } from "react-hook-form";
 
-import { useDataHandler } from "../../../hooks";
-import { StatisticsType, DataType } from "beat-motivator-type";
+import {
+  useDataHandler,
+  DataType,
+  MasterDataType,
+  StatisticsType,
+} from "../../../hooks";
 
 type FormData = {
   csv: string;
@@ -12,20 +16,46 @@ type FormData = {
 
 type CsvInputProps = {
   setPlayerData: React.Dispatch<React.SetStateAction<DataType[]>>;
+  setStatistics: React.Dispatch<React.SetStateAction<StatisticsType[]>>;
 };
 
 export const CsvInput: React.FC<CsvInputProps> = (props) => {
-  const { setPlayerData } = props;
+  const { setPlayerData, setStatistics } = props;
 
   const classes = useStyles();
   const theme = useTheme();
 
   const { register, handleSubmit, errors, reset } = useForm<FormData>();
 
-  const { parseData } = useDataHandler();
+  // TODO: ここらへんもReduxに押し込めた方がよい？
+  const { parseData, parseMasterData, calcStatistics } = useDataHandler();
 
   const handleParseCsv: SubmitHandler<FormData> = ({ csv }) => {
-    setPlayerData(parseData(csv));
+    // 入力データをパース
+    const playerData = parseData(csv);
+    setPlayerData(playerData);
+    console.log(playerData);
+
+    // マスターのcsvを読み込む
+    // TODO: 処理が怪しすぎる
+    (async () => {
+      const masterData = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `${process.env.PUBLIC_URL}/master_sp_songs.csv`);
+        xhr.onload = () => {
+          resolve(parseMasterData(xhr.response));
+        };
+        xhr.send(null);
+      });
+      console.log(masterData);
+
+      const statistics = calcStatistics(
+        playerData,
+        masterData as MasterDataType[]
+      );
+      console.log(statistics);
+      setStatistics(statistics);
+    })();
   };
 
   return (
