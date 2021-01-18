@@ -23,6 +23,9 @@ export type Attribute = {
   missCount: number;
   clearType: ClearType;
   djLevel: DjLevel;
+  notes: number;
+  kaidenAverage: number;
+  topScore: number;
 };
 
 export type Version =
@@ -106,102 +109,115 @@ export type MasterDataType = {
   spl: MasterAttribute;
 };
 
-export type MasterAttribute = {
-  level: number;
-  notes: number;
-  kaidenAverage: number;
-  topScore: number;
-};
-
-const isNoPlay = (diffData: Attribute) => diffData.level < 0;
-const isNoData = (diffData: MasterAttribute) => diffData.level < 0;
+export type MasterAttribute = Pick<
+  Attribute,
+  "level" | "notes" | "kaidenAverage" | "topScore"
+>;
 
 export const useDataHandler = () => {
-  const parseData = (csvElements: string): DataType[] => {
-    const getNoPlay = (): Attribute => ({
-      level: -1,
-      score: -1,
-      pGreat: -1,
-      great: -1,
-      missCount: -1,
-      clearType: "NO PLAY",
-      djLevel: "NO PLAY",
-    });
+  // TODO: マスターデータ引数で渡してるのが気持ち悪い、これもRedux案件？
+  const parseData = (
+    csvElements: string,
+    masterData: MasterDataType[]
+  ): DataType[] => {
+    const parseMissCount = (missCount: string): number =>
+      missCount === "---" ? -1 : parseInt(missCount);
+    const parseDjLevel = (djLevel: string): DjLevel =>
+      djLevel === "---" ? "NO PLAY" : (djLevel as DjLevel);
     return csvElements
       .trimEnd()
       .split("\n")
       .filter((_, idx) => idx > 0)
       .map((row) => row.split(","))
-      .map((element) => {
-        return {
-          version: element[0] as Version,
+      .map((valData) => {
+        const musicData = {
+          version: valData[0] as Version,
           // ""が入ってると処理が怪しいので消す
           // TODO: 正規表現の方がよさそう
-          title: element[1].replaceAll('"', ""),
-          genre: element[2].replaceAll('"', ""),
-          artist: element[3].replaceAll('"', ""),
-          plays: parseInt(element[4]),
-          spb:
-            parseInt(element[6]) > 0
-              ? {
-                  level: parseInt(element[5]),
-                  score: parseInt(element[6]),
-                  pGreat: parseInt(element[7]),
-                  great: parseInt(element[8]),
-                  missCount: parseInt(element[9]),
-                  clearType: element[10] as ClearType,
-                  djLevel: element[11] as DjLevel,
-                }
-              : getNoPlay(),
-          spn:
-            parseInt(element[13]) > 0
-              ? {
-                  level: parseInt(element[12]),
-                  score: parseInt(element[13]),
-                  pGreat: parseInt(element[14]),
-                  great: parseInt(element[15]),
-                  missCount: parseInt(element[16]),
-                  clearType: element[17] as ClearType,
-                  djLevel: element[18] as DjLevel,
-                }
-              : getNoPlay(),
-          sph:
-            parseInt(element[20]) > 0
-              ? {
-                  level: parseInt(element[19]),
-                  score: parseInt(element[20]),
-                  pGreat: parseInt(element[21]),
-                  great: parseInt(element[22]),
-                  missCount: parseInt(element[23]),
-                  clearType: element[24] as ClearType,
-                  djLevel: element[25] as DjLevel,
-                }
-              : getNoPlay(),
-          spa:
-            parseInt(element[27]) > 0
-              ? {
-                  level: parseInt(element[26]),
-                  score: parseInt(element[27]),
-                  pGreat: parseInt(element[28]),
-                  great: parseInt(element[29]),
-                  missCount: parseInt(element[30]),
-                  clearType: element[31] as ClearType,
-                  djLevel: element[32] as DjLevel,
-                }
-              : getNoPlay(),
-          spl:
-            parseInt(element[34]) > 0
-              ? {
-                  level: parseInt(element[33]),
-                  score: parseInt(element[34]),
-                  pGreat: parseInt(element[35]),
-                  great: parseInt(element[36]),
-                  missCount: parseInt(element[37]),
-                  clearType: element[38] as ClearType,
-                  djLevel: element[39] as DjLevel,
-                }
-              : getNoPlay(),
-          date: element[40],
+          title: valData[1].replaceAll('"', ""),
+          genre: valData[2].replaceAll('"', ""),
+          artist: valData[3].replaceAll('"', ""),
+        };
+        const valMaster = masterData.find(
+          (val) =>
+            val.version === musicData.version &&
+            val.title === musicData.title &&
+            val.genre === musicData.genre &&
+            val.artist === musicData.artist
+        );
+        if (!valMaster) {
+          // TODO: 曲データが見つかりませんでした的な警告表示したい
+          console.warn(
+            `music data "${valData[1]}" in ${valData[0]} is not found`
+          );
+        }
+        return {
+          version: musicData.version,
+          title: musicData.title,
+          genre: musicData.genre,
+          artist: musicData.artist,
+          plays: parseInt(valData[4]),
+          spb: {
+            level: parseInt(valData[5]),
+            score: parseInt(valData[6]),
+            pGreat: parseInt(valData[7]),
+            great: parseInt(valData[8]),
+            missCount: parseMissCount(valData[9]),
+            clearType: valData[10] as ClearType,
+            djLevel: parseDjLevel(valData[11]),
+            notes: valMaster ? valMaster.spb.notes : -1,
+            kaidenAverage: valMaster ? valMaster.spb.kaidenAverage : -1,
+            topScore: valMaster ? valMaster.spb.topScore : -1,
+          },
+          spn: {
+            level: parseInt(valData[12]),
+            score: parseInt(valData[13]),
+            pGreat: parseInt(valData[14]),
+            great: parseInt(valData[15]),
+            missCount: parseMissCount(valData[16]),
+            clearType: valData[17] as ClearType,
+            djLevel: parseDjLevel(valData[18]),
+            notes: valMaster ? valMaster.spn.notes : -1,
+            kaidenAverage: valMaster ? valMaster.spn.kaidenAverage : -1,
+            topScore: valMaster ? valMaster.spn.topScore : -1,
+          },
+          sph: {
+            level: parseInt(valData[19]),
+            score: parseInt(valData[20]),
+            pGreat: parseInt(valData[21]),
+            great: parseInt(valData[22]),
+            missCount: parseMissCount(valData[23]),
+            clearType: valData[24] as ClearType,
+            djLevel: parseDjLevel(valData[25]),
+            notes: valMaster ? valMaster.sph.notes : -1,
+            kaidenAverage: valMaster ? valMaster.sph.kaidenAverage : -1,
+            topScore: valMaster ? valMaster.sph.topScore : -1,
+          },
+          spa: {
+            level: parseInt(valData[26]),
+            score: parseInt(valData[27]),
+            pGreat: parseInt(valData[28]),
+            great: parseInt(valData[29]),
+            missCount: parseMissCount(valData[30]),
+            clearType: valData[31] as ClearType,
+            djLevel: parseDjLevel(valData[32]),
+            notes: valMaster ? valMaster.spa.notes : -1,
+            kaidenAverage: valMaster ? valMaster.spa.kaidenAverage : -1,
+            topScore: valMaster ? valMaster.spa.topScore : -1,
+          },
+          spl: {
+            level: parseInt(valData[33]),
+            score: parseInt(valData[34]),
+            pGreat: parseInt(valData[35]),
+            great: parseInt(valData[36]),
+            missCount: parseMissCount(valData[37]),
+            clearType: valData[38] as ClearType,
+            djLevel: parseDjLevel(valData[39]),
+            notes: valMaster ? valMaster.spl.notes : -1,
+            kaidenAverage: valMaster ? valMaster.spl.kaidenAverage : -1,
+            topScore: valMaster ? valMaster.spl.topScore : -1,
+          },
+          date: valData[40],
         };
       });
   };
@@ -214,7 +230,7 @@ export const useDataHandler = () => {
       .filter((_, idx) => idx > 0)
       .map((row) => row.split(","));
     const getNoData = (): MasterAttribute => ({
-      level: -1,
+      level: 0,
       notes: -1,
       kaidenAverage: -1,
       topScore: -1,
@@ -354,32 +370,26 @@ export const useDataHandler = () => {
         doubleA: 0,
         singleA: 0,
       }));
-    // TODO: ここらへんもreduceとかでもっといい感じにかけないかな
-    data.forEach((valData) => {
-      const valMaster = master.find(
-        (val) =>
-          valData.version === val.version &&
-          valData.title === val.title &&
-          valData.genre === val.genre &&
-          valData.artist === val.artist
-      );
-      if (!valMaster) {
-        // TODO: 曲データが見つかりませんでした的な警告表示したい
-        console.warn(`music data "${valData.title}" is not found`);
-        return;
-      }
+    // プレー済みじゃないとcsvに項目でてこないのf**k
+    master.forEach((valMaster) => {
       ["spb", "spn", "sph", "spa", "spl"].forEach((val) => {
         const key = val as "spb" | "spn" | "sph" | "spa" | "spl";
-        if (isNoData(valMaster[key])) return;
-        const idx = valMaster[key].level - 1;
-        ret[idx].total += 1;
-        if (isNoPlay(valData[key])) return;
-        const rate =
-          valData[key].score / (valMaster[key].notes * 2) + ERROR_GETA;
-        const scoreMaxMinus = valMaster[key].notes * 2 - valData[key].score;
+        if (valMaster[key].level === 0) return;
+        ret[valMaster[key].level - 1].total++;
+      });
+    });
+    // TODO: ここらへんもreduceとかでもっといい感じにかけないかな
+    data.forEach((valData) => {
+      ["spb", "spn", "sph", "spa", "spl"].forEach((val) => {
+        const key = val as "spb" | "spn" | "sph" | "spa" | "spl";
+        if (valData[key].notes < 0) return;
+        const idx = valData[key].level - 1;
+        if (valData[key].score === 0) return;
+        const rate = valData[key].score / (valData[key].notes * 2) + ERROR_GETA;
+        const scoreMaxMinus = valData[key].notes * 2 - valData[key].score;
         ret[idx].played += 1;
         ret[idx].scoreSum += valData[key].score;
-        ret[idx].notesSum += valMaster[key].notes;
+        ret[idx].notesSum += valData[key].notes;
         if (scoreMaxMinus < 10) ret[idx].maxMinusUnderTen++;
         if (scoreMaxMinus < 100) ret[idx].maxMinusUnderHundred++;
         if (rate > 17.0 / 18.0) ret[idx].maxMinus++;

@@ -31,11 +31,6 @@ export const CsvInput: React.FC<CsvInputProps> = (props) => {
   const { parseData, parseMasterData, calcStatistics } = useDataHandler();
 
   const handleParseCsv: SubmitHandler<FormData> = ({ csv }) => {
-    // 入力データをパース
-    const playerData = parseData(csv);
-    setPlayerData(playerData);
-    console.log(playerData);
-
     // マスターのcsvを読み込む
     // TODO: 処理が怪しすぎる
     (async () => {
@@ -47,13 +42,18 @@ export const CsvInput: React.FC<CsvInputProps> = (props) => {
         };
         xhr.send(null);
       });
-      console.log(masterData);
+      // console.log(masterData);
+
+      // 入力データをパース
+      const playerData = parseData(csv, masterData as MasterDataType[]);
+      setPlayerData(playerData);
+      // console.log(playerData);
 
       const statistics = calcStatistics(
         playerData,
         masterData as MasterDataType[]
       );
-      console.log(statistics);
+      // console.log(statistics);
       setStatistics(statistics);
     })();
   };
