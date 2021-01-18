@@ -1,25 +1,34 @@
 import React, { useState } from "react";
-// import { makeStyles } from "@material-ui/core/styles";
-import { Container } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
+import { Box, Typography } from "@material-ui/core";
 
 import { DataType, StatisticsType } from "../../hooks";
-import { CsvInput, StatisticsTable } from "../../components/Home";
+import { CsvInput, StatisticsTable, ScoreTable } from "../../components/Home";
 
 const Home: React.FC = () => {
-  // const classes = useStyles();
-
   // TODO: GOD STATE化してるのでReduxとかつかいたい
   const [playerData, setPlayerData] = useState<DataType[]>([]);
   const [statistics, setStatistics] = useState<StatisticsType[]>([]);
 
+  const theme = useTheme();
+
   return (
-    <Container maxWidth={false}>
+    <Box display="flex" flexDirection="column" gridGap={theme.spacing(2)}>
       <CsvInput setPlayerData={setPlayerData} setStatistics={setStatistics} />
-      {!!statistics.length && <StatisticsTable statistics={statistics} />}
-    </Container>
+      {!!statistics.length && (
+        <Box display="flex" flexDirection="column" gridGap={theme.spacing(1)}>
+          <Typography variant="h5">Statistics</Typography>
+          <StatisticsTable statistics={statistics} />
+        </Box>
+      )}
+      {!!playerData.length && (
+        <Box display="flex" flexDirection="column" gridGap={theme.spacing(1)}>
+          <Typography variant="h5">PlayData</Typography>
+          <ScoreTable playerData={playerData} />
+        </Box>
+      )}
+    </Box>
   );
 };
 
 export default Home;
-
-// const useStyles = makeStyles((theme) => ({}));
