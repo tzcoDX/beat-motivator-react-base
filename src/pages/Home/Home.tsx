@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import { Box, Typography } from "@material-ui/core";
 
-import { DataType, StatisticsType } from "../../hooks";
-import { CsvInput, StatisticsTable, ScoreTable } from "../../components/Home";
+import { DataType, StatisticsType } from "hooks";
+import { CsvInput, StatisticsTable, ScoreTable } from "components/Home";
+import { TweetButton } from "components/atoms";
 
 const Home: React.FC = () => {
   // TODO: GOD STATE化してるのでReduxとかつかいたい
@@ -17,7 +18,10 @@ const Home: React.FC = () => {
       <CsvInput setPlayerData={setPlayerData} setStatistics={setStatistics} />
       {!!statistics.length && (
         <Box display="flex" flexDirection="column" gridGap={theme.spacing(1)}>
-          <Typography variant="h5">Statistics</Typography>
+          <Box display="flex" alignItems="center" gridGap={theme.spacing(1)}>
+            <Typography variant="h5">Statistics</Typography>
+            <TweetButton statistics={statistics} />
+          </Box>
           <StatisticsTable statistics={statistics} />
         </Box>
       )}
